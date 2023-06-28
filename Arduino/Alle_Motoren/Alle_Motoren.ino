@@ -17,23 +17,28 @@ void setup()
   for(int i=0;i<3;i++){
     motor[i] = cnc_shield.get_motor(i);
   }
-  littleMove(1);
+  //littleMove(1);
+  rotate(200,0);
 }
 
 void littleMove(int direction){
   //load all number of steps for this direction (number is the number of steps that should be skipped)
   int axis_steps[3] = {gaps[direction]};
   int axis_dir[3] = {directions[direction]};
-
+  Serial.println("move");
   //iterate all steps an scan each time if a stepper has to move
-  for(int i=0; i<steps; i++){
-    //store the number of skipped steps for each axis
+  //store the number of skipped steps for each axis
     int used_steps[3]={0,0,0};
+  for(int i=0; i<steps; i++){
+    
     //for each axis
     for(int ax=0; ax<3; ax++){
       //
+      Serial.println("inside");
       int this_steps = axis_steps[ax];
-      used_steps[ax]++;
+      used_steps[ax]+=1;
+      Serial.println(used_steps[0]);
+      Serial.println(this_steps);
       if(used_steps[ax]==this_steps){
         used_steps[ax] = 0;
         makeOneStep(ax,axis_dir[ax]);
@@ -43,7 +48,9 @@ void littleMove(int direction){
 }
 
 void makeOneStep(int ax, int direction){
-  Serial.println("Step on "+ax+" to "+direction);
+  Serial.print(ax);
+  Serial.print(" ");
+  Serial.println(direction);
   motor[ax]->set_dir(direction);
   motor[ax]->step();
 }
@@ -63,4 +70,14 @@ void readInput(){
 void loop(){
 
   readInput();
+}
+
+
+void rotate(int duration, int direction){
+    for(int i=0; i<duration; i++){
+    //for each axis
+      for(int ax=0; ax<3; ax++){
+        makeOneStep(ax, direction);
+      }
+    }
 }
