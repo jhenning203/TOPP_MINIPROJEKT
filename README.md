@@ -7,8 +7,11 @@ Servo2 auf pin 12 -> SPN En
 ECHO1
 TRIG1
 
-ECHO2s
+ECHO2
 TRIG2
 
 ECHO3
 TRIG3
+
+TX auf TX
+RX auf RX
