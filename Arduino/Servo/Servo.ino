@@ -1,6 +1,7 @@
 #include <CNCShield.h>
-#define NO_OF_STEPS 200
-#define SLEEP_BETWEEN_STEPS_MS 15
+//#include <NewPing.h>
+#include <Servo.h>
+
 int incomingByte = 0;
 
 // [direction] [Motor (x,y,z)]
@@ -17,20 +18,45 @@ StepperMotor *motor[3] = {
   cnc_shield.get_motor(2)
 };
 
-//Global vars
-int sonarA = 100;
-int sonarB = 100;
-int sonarC = 100;
+//Global vars for sonar
+/*int sonarResultA = 100;
+NewPing sonarA;
+#define sonarTrigA 9
+#define sonarEchoA 10
+int sonarResultB = 100;
+NewPing sonarB;
+#define sonarTrigB 9
+#define sonarEchoB 10
+int sonarResultC = 100;
+NewPing sonarC;
+#define sonarTrigC 9
+#define sonarEchoC 10
+#define maxSonarDistance 400
+bool scanning_environment = false;*/
 
+
+//Global vars for servo
+#define servoStepDelay 10
+Servo servoA;
+#define servoPinA 20
+#define servoStartPosA 0
+#define servoEndPosA 180
+Servo servoB;
+#define servoPinB 21
+#define servoStartPosB 0
+#define servoEndPosB 180
+
+
+//Global vars for motors
 bool next_move_is_rotation = false;
 bool make_next_move = true;
-bool drop_lighter_signal = false;
-bool scanning_environment = true;
 int rotation_direction = 1;
 int rotation_duration = 1000;
 int next_move_length = 1000;
 int next_move_direction = 0;
 int speed = step_delay = 500; //microseconds
+
+bool drop_lighter_signal = false;
 
 
 void setup()
@@ -39,6 +65,15 @@ void setup()
   cnc_shield.begin();
   cnc_shield.enable();
 
+  /*if(scanning_environment){
+    sonarA = sonar(sonarTrigA, sonarEchoA, maxSonarDistance);
+    sonarB = sonar(sonarTrigB, sonarEchoB, maxSonarDistance);
+    sonarC = sonar(sonarTrigC, sonarEchoC, maxSonarDistance);
+  }*/
+
+  servoA.attach(servoPinA);
+  servoB.attach(servoPinB);
+
   //make fun move
   rotate(1000,0,step_delay);
   rotate(1000,1,step_delay);
@@ -46,9 +81,9 @@ void setup()
 
 void loop(){
 
-  if(scanning_environment){
+  /*if(scanning_environment){
     updateSensors();
-  }
+  }*/
   
   readInputCommands();
 
@@ -61,7 +96,7 @@ void loop(){
     if(next_move_is_rotation){
       rotate(rotation_duration, rotation_direction, step_delay);
     }else{
-      //Serial.print("make move with length ");Serial.print(next_move_length);Serial.print(" to direction ");Serial.println(next_move_length);
+      //Serial.print("Make move with length ");Serial.print(next_move_length);Serial.print(" to direction ");Serial.println(next_move_length);
       littleMove(next_move_length, next_move_direction, step_delay);
     }
   }
@@ -92,22 +127,23 @@ void littleMove(int move_length, int move_direction, int speed){
   //do certain amount of steps and use only specific
   for(int i=0; i<steps; i++){
     
-    //for each axis
-    for(int ax=0; ax<3; ax++){
-      
-      //extract skipped steps for this axis
-      int this_axis_skipped_steps = axis_steps[ax];
-
-      //increase axis counter
-      used_steps[ax]+=1;
-
-      if(used_steps[ax]>=this_axis_skipped_steps){
-        used_steps[ax] = 0;
-        motor[ax]->step();
+      //for each axis
+      for(int ax=0; ax<3; ax++){
+        
+          //extract skipped steps for this axis
+          int this_axis_skipped_steps = axis_steps[ax];
+    
+          //increase axis counter
+          used_steps[ax]+=1;
+    
+          if(used_steps[ax]>=this_axis_skipped_steps){
+              Serial.print("Made on step on axis ");Serial.println(dir_name[ax]);
+              used_steps[ax] = 0;
+              motor[ax]->step();
+          }
       }
-    }
-  }
-  delayMicroseconds(speed);
+    delayMicroseconds(speed);
+  } 
 }
 
 void readInputCommands(){
@@ -138,6 +174,24 @@ void rotate(int steps, int direction, int step_delay){
     }
     delayMicroseconds(step_delay);
   }
+}
+
+void drop(){
+  int j = servoStartPosB;
+  for(int i=servoStartPosA;i<servoStopPosA; i++){
+    j++;
+    servoA.write(i);
+    servoB.write(j);
+    delay(servoStepDelay);
+  }
+}
+
+void updateSensors(){
+  /*sonarResultA = sonarA.ping_cm();
+  sonarResultB = sonarB.ping_cm();
+  sonarResultC = sonarC.ping_cm();*/
+
+  //send scanned values
 }
 
 
