@@ -254,7 +254,7 @@ void readInputCommands(){
   }
   else{
     Serial.println("no command recieved");
-    delay(1000);
+    delay(300);
     make_next_move = false;
   }
 }
