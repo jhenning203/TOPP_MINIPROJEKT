@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <style>
+    body{
+      background-color: #888888;
+    }
+
+
+    .slidecontainer {
+      width: 100%;
+    }
+    .slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 15px;
+      border-radius: 5px;
+      background: #d3d3d3;
+      outline: none;
+      opacity: 0.7;
+      -webkit-transition: .2s;
+      transition: opacity .2s;
+      
+    }
+    .slider:hover {
+      opacity: 1;
+      
+    }
+  
+    .slider::-webkit-slider-thumb {
+      
+      -webkit-appearance: none;
+      appearance: none;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background: red;
+      cursor: pointer;
+    }
+    .slider::-moz-range-thumb {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background: red;
+      cursor: pointer;
+      
+    }
+
+
+.circle-container {
+  
+  position: relative;
+  width: 20em;
+  height: 20em;
+  border-radius: 50%;
+  padding: 0;
+  list-style: none;
+  margin-top: 1.5em;
+  left:3em;
+
+ 
+}
+.circle-container > * {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -3em;
+  width: 6em;
+  height: 6em;
+}
+.circle-element {
+  background-color: rgb(0, 0, 0) !important;
+  color:aliceblue;
+}
+.button-text {
+  position: relative;
+  top: 1em;
+  
+  text-align: center;
+}
+.circle-container > *:nth-of-type(1) {
+  transform: rotate(10deg) translate(10em) rotate(-10deg);
+}
+.circle-container > *:nth-of-type(2) {
+  transform: rotate(30deg) translate(9.4em) rotate(-30deg);
+}
+.circle-container > *:nth-of-type(3) {
+  transform: rotate(50deg) translate(10em) rotate(-50deg);
+}
+.circle-container > *:nth-of-type(4) {
+  transform: rotate(70deg) translate(10em) rotate(-70deg);
+}
+.circle-container > *:nth-of-type(5) {
+  transform: rotate(90deg) translate(9.4em) rotate(-90deg);
+}
+.circle-container > *:nth-of-type(6) {
+  transform: rotate(110deg) translate(10em) rotate(-110deg);
+}
+.circle-container > *:nth-of-type(7) {
+  transform: rotate(130deg) translate(10em) rotate(-130deg);
+}
+.circle-container > *:nth-of-type(8) {
+  transform: rotate(150deg) translate(9.4em) rotate(-150deg);
+}
+.circle-container > *:nth-of-type(9) {
+  transform: rotate(170deg) translate(10em) rotate(-170deg);
+}
+.circle-container > *:nth-of-type(10) {
+  transform: rotate(190deg) translate(10em) rotate(-190deg);
+}
+.circle-container > *:nth-of-type(11) {
+  transform: rotate(210deg) translate(9.4em) rotate(-210deg);
+}
+.circle-container > *:nth-of-type(12) {
+  transform: rotate(230deg) translate(10em) rotate(-230deg);
+}
+.circle-container > *:nth-of-type(13) {
+  transform: rotate(250deg) translate(10em) rotate(-250deg);
+}
+.circle-container > *:nth-of-type(14) {
+  transform: rotate(270deg) translate(9.4em) rotate(-270deg);
+}
+.circle-container > *:nth-of-type(15) {
+  transform: rotate(290deg) translate(10em) rotate(-290deg);
+}
+.circle-container > *:nth-of-type(16) {
+  transform: rotate(310deg) translate(10em) rotate(-310deg);
+}
+.circle-container > *:nth-of-type(17) {
+  transform: rotate(330deg) translate(9.4em) rotate(-330deg);
+}
+.circle-container > *:nth-of-type(18) {
+  transform: rotate(350deg) translate(10em) rotate(-350deg);
+}
+
+.circle-container > *:nth-of-type(24) {
+  transform: rotate(60deg) translate(4em) rotate(-60deg);
+}
+.circle-container > *:nth-of-type(19) {
+  transform: rotate(120deg) translate(4em) rotate(-120deg);
+}
+.circle-container > *:nth-of-type(20) {
+  transform: rotate(180deg) translate(4em) rotate(-180deg);
+}
+.circle-container > *:nth-of-type(21) {
+  transform: rotate(240deg) translate(4em) rotate(-240deg);
+}
+.circle-container > *:nth-of-type(22) {
+  transform: rotate(300deg) translate(4em) rotate(-300deg);
+}
+.circle-container > *:nth-of-type(23) {
+  transform: rotate(0deg) translate(4em) rotate(-0deg);
+}
+
+
+
+.circle-container div {
+  display: block;
+  width: 3.4em;
+  height: 3.4em;
+  margin-top:1.2em;
+  margin-left:1.2em;
+  top:2em;
+  border-radius: 50%;
+  
+  background-color: rgb(255, 123, 71);
+
+  transition: .15s;
+}
+
+    </style>
+  
+  </head>
+  <body class="noselect" align="center" >
+
+
+
+
+
+    <table id="mainTable" style="width:90%;margin:none;table-layout:fixed" CELLSPACING=0>
+
+
+
+
+
+
+      
+      <tr>
+        <!--<img id="cameraImage" src="" style="width:400px;height:250px"></td>-->
+        <td>
+          <img src="" id="photo" style="width:400px;height:250px">
+          <!--<div id="console" style="width:400px;height:250px;border: solid 5px black; overflow-y:scroll;" ></div>-->
+        </td>
+      </tr> 
+      <tr>
+        <td style="text-align:left"><b>Speed:</b></td>
+        <td colspan=2>
+         <div class="slidecontainer">
+            <input type="range" min="65" max="90" value="150" class="slider" id="Speed" oninput='updateSlider("s",value)'>
+          </div>
+        </td>
+      </tr>        
+      <tr>
+        <td style="text-align:left"><b>Light:</b></td>
+        <td colspan=2>
+          <div class="slidecontainer">
+            <input type="range" min="65" max="90" value="0" class="slider" id="Light" oninput='updateSlider("k",value)'>
+          </div>
+        </td>   
+      </tr>
+      <tr>
+        <td>
+      <ul class='circle-container'>
+        <li><div id="1" class="circle-element" ontouchstart="init_click('1');" ontouchend="exit_click('1');"><p class="button-text">1</p></div></li>
+        <li><div id="2" class="circle-element" ontouchstart="init_click('2');" ontouchend="exit_click('2');"><p class="button-text">2</p></div></li>
+        <li><div id="3" class="circle-element" ontouchstart="init_click('3');" ontouchend="exit_click('3');"><p class="button-text">3</p></div></li>
+        <li><div id="4" class="circle-element" ontouchstart="init_click('4');" ontouchend="exit_click('4');"><p class="button-text">4</p></div></li>
+        <li><div id="5" class="circle-element" ontouchstart="init_click('5');" ontouchend="exit_click('5');"><p class="button-text">5</p></div></li>
+        <li><div id="6" class="circle-element" ontouchstart="init_click('6');" ontouchend="exit_click('6');"><p class="button-text">6</p></div></li>
+        <li><div id="7" class="circle-element" ontouchstart="init_click('7');" ontouchend="exit_click('7');"><p class="button-text">7</p></div></li>
+        <li><div id="8" class="circle-element" ontouchstart="init_click('8');" ontouchend="exit_click('8');"><p class="button-text">8</p></div></li>
+        <li><div id="9" class="circle-element" ontouchstart="init_click('9');" ontouchend="exit_click('9');"><p class="button-text">9</p></div></li>
+        <li><div id="a" class="circle-element" ontouchstart="init_click('a');" ontouchend="exit_click('a');"><p class="button-text">a</p></div></li>
+        <li><div id="b" class="circle-element" ontouchstart="init_click('b');" ontouchend="exit_click('b');"><p class="button-text">b</p></div></li>
+        <li><div id="c" class="circle-element" ontouchstart="init_click('c');" ontouchend="exit_click('c');"><p class="button-text">c</p></div></li>
+        <li><div id="d" class="circle-element" ontouchstart="init_click('d');" ontouchend="exit_click('d');"><p class="button-text">d</p></div></li>
+        <li><div id="e" class="circle-element" ontouchstart="init_click('e');" ontouchend="exit_click('e');"><p class="button-text">e</p></div></li>
+        <li><div id="f" class="circle-element" ontouchstart="init_click('f');" ontouchend="exit_click('f');"><p class="button-text">f</p></div></li>
+        <li><div id="g" class="circle-element" ontouchstart="init_click('g');" ontouchend="exit_click('g');"><p class="button-text">g</p></div></li>
+        <li><div id="h" class="circle-element" ontouchstart="init_click('h');" ontouchend="exit_click('h');"><p class="button-text">h</p></div></li>
+        <li><div id="0" class="circle-element" ontouchstart="init_click('0');" ontouchend="exit_click('0');"><p class="button-text">0</p></div></li>
+      
+        <li><div id="p" class="circle-inner-element" ontouchstart="init_click('p');" ontouchend="exit_click('p');"><p class="button-text">Drop</p></div></li>
+        <li><div id="m" class="circle-inner-element" ontouchstart="toggleAuto()" ><p class="button-text">Auto</p></div></li>
+        <li><div id="r" class="circle-inner-element" ontouchstart="init_click('r');" ontouchend="exit_click('r');" ><p class="button-text">Right</p></div></li>
+        <li><div id="l" class="circle-inner-element" ontouchstart="init_click('l');" ontouchend="exit_click('l');" ><p class="button-text">Left</p></div></li>
+        <li><div id="v" class="circle-inner-element" ontouchstart="toggleCam()" ><p class="button-text">Cam</p></div></li>
+        <li><div id="w" class="circle-inner-element" ontouchstart="init_click('w');" ontouchend="exit_click('w');"><p class="button-text">Spit</p></div></li>
+      </ul>
+    </td>
+    </tr>
+
+     
+    </table>
+  
+    <script>
+      var interval;
+      var interval_active = false;
+      var last_command = "";
+      var enabled_cam = false;
+      var enabled_auto = false
+
+      function loop(){
+        //log(last_command)
+        write_command(last_command)
+        //var strBytes = last_command.charCodeAt(0)
+        //console.log(strBytes)
+      }
+      
+      function init_click(command){
+        document.getElementById(command).style.backgroundColor = "green"
+        last_command = command
+        if(!interval_active){
+          interval_active = true
+          loop()
+          interval = setInterval(loop, 300)
+        }
+        
+      }
+
+      function exit_click(command){
+        document.getElementById(command).style.backgroundColor = "orange"
+        interval_active = false
+        clearInterval(interval)
+      }
+
+      function updateSlider(type, val){
+        byte_val = String.fromCharCode(val)
+        last_command = type+byte_val
+        loop()
+      }
+      function toggleCam(){
+        if(enabled_cam){
+          enabled_cam = false
+          last_command = "v0"
+          document.getElementById("v").style.backgroundColor = "orange"
+        }
+        else{
+          enabled_cam = true
+          last_command = "v1"
+          document.getElementById("v").style.backgroundColor = "green"
+        }
+        loop()
+      }
+      function toggleAuto(){
+        if(enabled_auto){
+          enabled_auto = false
+          last_command = "m0"
+          document.getElementById("m").style.backgroundColor = "orange"
+        }
+        else{
+          enabled_auto = true
+          last_command = "m1"
+          document.getElementById("m").style.backgroundColor = "green"
+        }
+        loop()
+      }
+
+
+
+
+      function log(text){
+        document.getElementById("console").innerHTML += text+"<br>"
+      }
+      
+      function write_command(command) {
+        console.log(x)
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/action?go=" + command, true);
+        xhr.send();
+      }
+      
+      window.onload = document.getElementById("photo").src = window.location.href.slice(0, -1) + ":81/stream";
+      
+    
+    </script>
+  </body>    
+</html>
