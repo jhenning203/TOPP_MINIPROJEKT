@@ -294,7 +294,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <li><div id="r" class="circle-inner-element" ontouchstart="init_click('r');" ontouchend="exit_click('r');" ><p class="button-text">Right</p></div></li>
         <li><div id="l" class="circle-inner-element" ontouchstart="init_click('l');" ontouchend="exit_click('l');" ><p class="button-text">Left</p></div></li>
         <li><div id="v" class="circle-inner-element" ontouchstart="toggleCam()" ><p class="button-text">Cam</p></div></li>
-        <li><div id="w" class="circle-inner-element" ontouchstart="init_click('w');" ontouchend="exit_click('w');"><p class="button-text">Spit</p></div></li>
+        <li><div id="w" class="circle-inner-element" ontouchstart="togglePump();"><p class="button-text">Spit</p></div></li>
       </ul>
     </td>
     </tr>
@@ -308,6 +308,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       var last_command = "";
       var enabled_cam = false;
       var enabled_auto = false
+      var enabled_pump = false
 
       function loop(){
         //log(last_command)
@@ -348,6 +349,19 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           enabled_cam = true
           last_command = "v1"
           document.getElementById("v").style.backgroundColor = "green"
+        }
+        loop()
+      }
+       function togglePump(){
+        if(enabled_pump){
+          enabled_pump = false
+          last_command = "w0"
+          document.getElementById("w").style.backgroundColor = "orange"
+        }
+        else{
+          enabled_pump = true
+          last_command = "w1"
+          document.getElementById("w").style.backgroundColor = "green"
         }
         loop()
       }
@@ -483,12 +497,20 @@ static esp_err_t cmd_handler(httpd_req_t *req){
 
   sensor_t * s = esp_camera_sensor_get();
   int res = 0;
+  /*
+    else if(!strcmp(variable, "stop")) {
+    Serial.println("Stop");
+  }
+  */
   
   if(strlen(variable)>0) {
+    Serial.print("recieved ");
     Serial.println(variable);
+    
   }
 
   else {
+    Serial.println("no message");
     res = -1;
   }
 

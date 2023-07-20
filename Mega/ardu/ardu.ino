@@ -6,8 +6,8 @@ int incomingByte = 0;
 
 // [direction] [Motor (x,y,z)]
 //init with excel values
-int gaps[18][3] =       {{12,4,6},{6,4,12}, {5,5,0},{4,6,12}, {4,12,6},{5,0,5},{6,12,4},{12,6,4},{0,5,5}, {12,4,6},   {6,4,12}, {0,5,5},{4,6,12},{4,12,6},{5,0,5},{6,12,4},{12,6,4},{0,5,5}};
-int directions[18][3] = {{1,0,1}, {1,0,1},  {1,0,0},{1,0,0},  {1,0,0},{1,0,0},{1,1,0},  {1,1,0},{0,1,0},  {0,1,0},    {0,1,0},  {0,0,1},{0,1,1},{0,1,1},{0,0,1},  {0,0,1},{0,0,1},  {0,0,1}};
+int gaps[18][3] =       {{12,4,6},{6,4,12}, {5,5,0},{4,6,12}, {4,12,6},{5,0,5},{6,12,4},{12,6,4},{0,5,5}, {12,4,6},   {6,4,12}, {5,5,0},{4,6,12},{4,12,6},{5,0,5},{6,12,4},{12,6,4},{0,5,5}};
+int directions[18][3] = {{1,0,1}, {1,0,1},  {1,0,0},{1,0,0},  {1,0,0},{1,0,0},{1,1,0},  {1,1,0},{0,1,0},  {0,1,0},    {0,1,0},  {0,1,1},{0,1,1},{0,1,1},{0,0,1},  {0,0,1},{0,0,1},  {0,0,1}};
 char dir_name[3] = {'x','y','z'};
 
 //Create motor objects
@@ -36,16 +36,19 @@ bool scanning_environment = false;*/
 
 
 //Global vars for servo
-#define servoStepDelay 20
+#define servoStepDelay 4
 Servo servoA;
-#define servoPinA 13
+#define servoPinA 24 //spn en
+#define bottom_light_pin 28
 
 int SPosA = 0;
 
 Servo servoB;
-#define servoPinB 12
-#define servoDist 45
+#define servoPinB 22 //spn dir
+#define servoDist 49
 int SPosB = 0;
+
+
 
 
 
@@ -54,18 +57,27 @@ bool next_move_is_rotation = false;
 bool make_next_move = false;
 int rotation_direction = 1;
 int rotation_duration = 4000;
-int next_move_length = 20000;
+int next_move_length = 5000;
 int next_move_direction = 0;
 int step_delay = 100; //microseconds
 int step_delay_rotation = 500;
 
 bool drop_lighter_signal = false;
+bool spit_liquid_signal = false;
+
+
+bool cam = false;
+bool cam_changed = false;
+int brightness = 50;
+
+#define pumpPin 42
 
 
 void setup()
 {
   Serial.begin(115200);
-  Serial.println("****Reboot****");
+  Serial1.begin(115200);
+  Serial.println("*Reboot*");
   cnc_shield.begin();
   
 
@@ -85,7 +97,7 @@ void setup()
 }
 
 void loop(){
-  Serial.println("next loop iteration **********");
+  Serial.println("next loop iteration ****");
   Serial.print("next move :");
   Serial.println(make_next_move);
   /*if(scanning_environment){
@@ -94,11 +106,8 @@ void loop(){
 
   readInputCommands();
 
-
-  if(drop_lighter_signal){
-    drop();
-    drop_lighter_signal = false;
-  }
+  checkSpecialCommands();
+ 
 
   if(make_next_move){
     if(next_move_is_rotation){
@@ -107,8 +116,15 @@ void loop(){
       Serial.println("Rotation end");
     }else{
       //Serial.print("Make move with length ");Serial.print(next_move_length);Serial.print(" to direction ");Serial.println(next_move_length);
-      littleMove(next_move_length, next_move_direction, step_delay);
+      littleMove(next_move_length, correct(next_move_direction), step_delay);
     }
+  }
+}
+
+  int correct(int dir){
+    int cor_dir = dir;
+    int corrected_dir = (cor_dir - 4 ) % 18;
+    return corrected_dir;
   }
 
   
@@ -128,6 +144,26 @@ void loop(){
 
   
 
+
+
+void checkSpecialCommands(){
+  if(drop_lighter_signal){
+    drop();
+    drop_lighter_signal = false;
+  }
+
+  if(spit_liquid_signal){
+    digitalWrite(pumpPin, HIGH);
+  }else{
+    digitalWrite(pumpPin, LOW);
+  }
+
+  if(cam_changed){
+    open_servo(cam);
+    cam_changed = false;
+  }
+
+
 }
 
 void littleMove(int move_length, int move_direction, int move_step_delay){
@@ -137,7 +173,7 @@ void littleMove(int move_length, int move_direction, int move_step_delay){
   int *axis_steps = gaps[move_direction];
   //load forward or backward direction for each stepper
   int *axis_dir = directions[move_direction];
-  Serial.println("**** Step_Skip_Array is: ");
+  Serial.println("** Step_Skip_Array is: ");
   Serial.print(axis_steps[0]);Serial.print(", ");Serial.print(axis_steps[1]);Serial.print(", ");Serial.println(axis_steps[2]);
 
   //iterate all steps an scan each time if a stepper has to move
@@ -174,10 +210,10 @@ void littleMove(int move_length, int move_direction, int move_step_delay){
 
 void readInputCommands(){
   int state = 0;
-  if (Serial.available() > 0) {
+  if (Serial1.available() > 0) {
     // read the incoming byte:
-    while(Serial.available() > 0){
-      incomingByte = Serial.read();
+    while(Serial1.available() > 0){
+      incomingByte = Serial1.read();
 
       Serial.print("I received: ");
       Serial.println(incomingByte, DEC);
@@ -188,7 +224,16 @@ void readInputCommands(){
 
 
         if(incomingByte == 112){
-          // drop();
+          drop_lighter_signal = true;
+        }
+        else if(incomingByte == 87){
+          state = 3;
+        }
+        else if(incomingByte == 107){
+          state = 4;
+        }
+        else if(incomingByte == 118){
+          state = 5;
         }
         //directions 0 - 9
         else if(incomingByte >= 48 && incomingByte <= 57){
@@ -247,7 +292,35 @@ void readInputCommands(){
         Serial.print("Set speed to");
         Serial.println(step_delay);
         state = 0;
-        delay(2000);
+        //delay(2000);
+      }
+
+      else if(state == 4){
+        brightness = map(incomingByte, 65, 90, 0, 255);
+        state = 0;
+      }
+
+      else if(state == 3){
+        //set pump motor
+        if(incomingByte == "0"){
+          spit_liquid_signal = 0;
+        }else{
+          spit_liquid_signal = 1;
+        }
+        state = 0;
+        
+      }
+
+      else if(state == 5){
+        //set pump motor
+        cam_changed =true;
+        if(incomingByte == "0"){
+          cam = false;
+        }else{
+          cam = true;
+        }
+        state = 0;
+        
       }
     }
     //TODO update values
@@ -302,6 +375,37 @@ void drop(){
     servoA.detach();
   servoB.detach();
   
+}
+
+void open_servo(bool open){
+    servoA.attach(servoPinA);
+  servoB.attach(servoPinB);
+if(open){
+  /*
+  SPosB=servoDist;
+  for(SPosA=0;SPosA<servoDist; SPosA++){
+    SPosB--;
+    servoA.write(SPosA);
+    delay(servoStepDelay);
+    servoB.write(SPosB);
+    */
+    digitalWrite(bottom_light_pin,HIGH);
+  }
+ }else{
+  /*
+  SPosB=0;
+  SPosA=servoDist;
+    for(SPosA=servoDist;SPosA>=0; SPosA--){
+    SPosB++;
+    servoA.write(SPosA);
+    delay(servoStepDelay);
+    servoB.write(SPosB);
+    */
+    digitalWrite(bottom_light_pin,LOW);
+  }
+ }
+     servoA.detach();
+  servoB.detach();
 }
 
 void updateSensors(){
